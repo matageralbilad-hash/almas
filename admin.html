@@ -113,21 +113,31 @@
     animation: floatParticle linear infinite;
   }
 
-  /* تخصيص زر الرفع لتمريره وتناسقه مع التصميم */
-  .uploadcare--widget { width: 100% !important; }
+  /* 🛠️ هندسة وتنسيق أزرار الرفع المباشر لـ Uploadcare لتناسب القالب الفخم */
+  .uploadcare--widget {
+    width: 100% !important;
+    display: block !important;
+  }
   .uploadcare--widget__button_type_open {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #B76E79 !important;
-    border: 1px dashed rgba(255, 255, 255, 0.2) !important;
-    border-radius: 12px !important;
-    padding: 12px !important;
-    font-size: 13px !important;
+    background: linear-gradient(135deg, rgba(183,110,121,0.1), rgba(232,180,184,0.05)) !important;
+    color: #E8B4B8 !important;
+    border: 1px dashed rgba(183,110,121,0.4) !important;
+    border-radius: 16px !important;
+    padding: 14px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
     width: 100% !important;
     transition: all 0.3s ease !important;
+    text-align: center !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
   }
   .uploadcare--widget__button_type_open:hover {
     border-color: #B76E79 !important;
-    background: rgba(183,110,121,0.1) !important;
+    background: rgba(183,110,121,0.2) !important;
+    transform: translateY(-1px) !important;
+  }
+  .uploadcare--widget__text {
+    display: none !important; /* إخفاء نصوص الـ Widget الافتراضية المزعجة */
   }
 </style>
 </head>
@@ -172,8 +182,10 @@
         <div>
           <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج السحابية</label>
           <div class="space-y-3">
-            <!-- حقل إدخال Uploadcare الذكي مدمج يفتح الكاميرا أو الاستديو مباشرة ويعمل تحت أي حجب -->
-<input type="hidden" role="uploadcare-uploader" id="uploadcareInput" data-public-key="42cd45b709faa0cf86b6" data-images-only="true">
+            <!-- حقل إدخال Uploadcare الذكي المربوط بمفتاح حسابك المعتمد -->
+            <div class="w-full" dir="ltr">
+              <input type="hidden" role="uploadcare-uploader" id="uploadcareInput" data-public-key="42cd45b709faa0cf86b6" data-images-only="true" data-locale="ar">
+            </div>
             <input type="url" id="prodImage" required readonly class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 text-xs text-left" dir="ltr" placeholder="رابط الصورة المستحصل التلقائي...">
           </div>
           <span id="uploadStatus" class="block text-[11px] text-gray-500 font-bold mt-2 mr-1">بانتظار اختيار ملف لرفعه سحابياً...</span>
@@ -276,7 +288,6 @@ window.switchAdminTab = function(tabId) {
   document.getElementById(`tab-${tabId}`).className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
 };
 
-// إعدادات اتصال الفايربيس الأساسية الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
   authDomain: "wc-fantasy-9a504.firebaseapp.com",
@@ -295,8 +306,18 @@ const database = firebase.database();
 const singleWidget = uploadcare.SingleWidget('[role=uploadcare-uploader]');
 const statusEl = document.getElementById('uploadStatus');
 
+// تخصيص النص الظاهري الافتراضي للزر ليصبح باللغة العربية ومتوافقاً
+uploadcare.localize({
+  buttons: {
+    choose: {
+      images: {
+        one: 'اضغط هنا لرفع صورة الفستان 📸'
+      }
+    }
+  }
+});
+
 singleWidget.onUploadComplete(function(info) {
-  // عند اكتمال الرفع نأخذ رابط الـ CDN المباشر ونضعه في حقل الصورة فوراً للفايربيس
   document.getElementById('prodImage').value = info.cdnUrl;
   statusEl.innerText = "✅ تم رفع الصورة وتوليد الرابط الملكي عبر Uploadcare بنجاح!";
   statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
@@ -308,7 +329,6 @@ singleWidget.onStateChange(function(state) {
     statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
   }
 });
-
 
 document.getElementById('addProductForm').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -330,7 +350,7 @@ document.getElementById('addProductForm').addEventListener('submit', (e) => {
   .then(() => {
     alert('💎 تم نشر القطعة الملكية الجديدة بنجاح! ستظهر بالاندكس فوراً حياً.');
     document.getElementById('addProductForm').reset();
-    singleWidget.value(null); // إعادة تهيئة حقل الرفع ليكون فارغاً مجدداً
+    singleWidget.value(null); 
     statusEl.innerText = "بانتظار اختيار ملف لرفعه سحابياً...";
     statusEl.className = "block text-[11px] text-gray-500 font-bold mt-2 mr-1";
   })
