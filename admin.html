@@ -113,7 +113,7 @@
     animation: floatParticle linear infinite;
   }
 
-  /* 🛠️ هندسة وتنسيق أزرار الرفع المباشر لـ Uploadcare لتناسب القالب الفخم */
+  /* تنسيق أزرار الرفع المباشر لـ Uploadcare لتناسب القالب الفخم */
   .uploadcare--widget {
     width: 100% !important;
     display: block !important;
@@ -135,9 +135,6 @@
     border-color: #B76E79 !important;
     background: rgba(183,110,121,0.2) !important;
     transform: translateY(-1px) !important;
-  }
-  .uploadcare--widget__text {
-    display: none !important; /* إخفاء نصوص الـ Widget الافتراضية المزعجة */
   }
 </style>
 </head>
@@ -182,7 +179,7 @@
         <div>
           <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج السحابية</label>
           <div class="space-y-3">
-            <!-- حقل إدخال Uploadcare الذكي المربوط بمفتاح حسابك المعتمد -->
+            <!-- حقل إدخال Uploadcare ممرر إليه كود اللغة العربية تلقائياً وبدون دالة مسببة للأخطاء -->
             <div class="w-full" dir="ltr">
               <input type="hidden" role="uploadcare-uploader" id="uploadcareInput" data-public-key="42cd45b709faa0cf86b6" data-images-only="true" data-locale="ar">
             </div>
@@ -288,6 +285,7 @@ window.switchAdminTab = function(tabId) {
   document.getElementById(`tab-${tabId}`).className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
 };
 
+// إعدادات اتصال الفايربيس الأساسية الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
   authDomain: "wc-fantasy-9a504.firebaseapp.com",
@@ -305,17 +303,6 @@ const database = firebase.database();
 // ⚡ محرك التنصت على مرفق Uploadcare والتحكم بالروابط بنجاح ⚡
 const singleWidget = uploadcare.SingleWidget('[role=uploadcare-uploader]');
 const statusEl = document.getElementById('uploadStatus');
-
-// تخصيص النص الظاهري الافتراضي للزر ليصبح باللغة العربية ومتوافقاً
-uploadcare.localize({
-  buttons: {
-    choose: {
-      images: {
-        one: 'اضغط هنا لرفع صورة الفستان 📸'
-      }
-    }
-  }
-});
 
 singleWidget.onUploadComplete(function(info) {
   document.getElementById('prodImage').value = info.cdnUrl;
