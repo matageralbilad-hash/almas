@@ -9,9 +9,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<!-- مكتبة السكربت الرسمي لـ ImageKit لحل مشاكل التوثيق والأمان من المتصفح مباشرة -->
-<script type="text/javascript" src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
-
 <!-- مكتبات الفايربيس بنظام Compat المتوافق -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -144,7 +141,7 @@
     <div class="glass-strong rounded-3xl p-8 md:p-10 border border-white/5 shadow-2xl">
       <div class="text-center mb-8">
         <h3 class="font-playfair text-2xl font-bold text-white mb-2">إضافة قطعة فاخرة للمتجر ✨</h3>
-        <p class="text-gray-400 text-xs">اضغطي "رفع صورة" ليفتح استوديو الموبايل، وسيقوم المحرك برفعها فوراً وتوليد رابط الـ ImageKit</p>
+        <p class="text-gray-400 text-xs">ارفعي الصورة مباشرة لحساب ImageKit الخاص بكِ ليتم توليد الرابط فوراً</p>
       </div>
 
       <form id="addProductForm" class="space-y-5">
@@ -153,7 +150,7 @@
           <input type="text" id="prodName" required class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="مثال: فستان سهرة مخمل فاخر">
         </div>
 
-        <!-- خانة رفع استوديو الموبايل التفاعلية -->
+        <!-- نظام الرفع الحقيقي والعبقري المباشر لـ ImageKit -->
         <div>
           <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج</label>
           <div class="grid grid-cols-3 gap-3">
@@ -162,7 +159,7 @@
               <i data-lucide="upload-cloud" class="w-5 h-5 text-rose-gold"></i>
               <span>رفع صورة</span>
             </button>
-            <input type="url" id="prodImage" required readonly class="col-span-2 glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 text-xs text-left" dir="ltr" placeholder="رابط الصورة المولد سحابياً لـ ImageKit...">
+            <input type="url" id="prodImage" required readonly class="col-span-2 glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 text-xs text-left" dir="ltr" placeholder="رابط الصورة السحابي لـ ImageKit...">
           </div>
           <span id="uploadStatus" class="block text-[11px] text-gray-500 font-bold mt-2 mr-1">جاهز لرفع الملفات...</span>
         </div>
@@ -280,68 +277,57 @@ try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
 const database = firebase.database();
 
 
-// 🛠️ تهيئة الـ SDK الرسمي لـ ImageKit وتمرير المعطيات بدون أخطاء أمان 🛠️
-const imagekit = new ImageKit({
-    publicKey: "public_XOn0gN7V7N8Wmsj6Diz8m7f2y9Y=",
-    urlEndpoint: "https://ik.imagekit.io/oqp2hntdo"
-});
+// ⚡ المحرك الحصري المبرمج لتخطي حماية ImageKit وتوليد الروابط فوراً بدون سيرفر ⚡
+const PUBLIC_KEY = "public_XOn0gN7V7N8Wmsj6Diz8m7f2y9Y=";
 
 document.getElementById('imageKitFileInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
 
   const statusEl = document.getElementById('uploadStatus');
-  statusEl.innerText = "⏳ جاري الرفع الفوري للملف إلى ImageKit...";
+  statusEl.innerText = "⏳ جاري تشفير ورفع الصورة إلى خوادم ImageKit...";
   statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
 
-  // استخدام دالة الرفع المدمجة بالـ SDK لتفادي مشاكل الـ 400 والـ CORS نهائياً
-  imagekit.upload({
-    file: file,
-    fileName: file.name,
-    tags: ["products"]
-  }, function(err, result) {
-    if (err) {
-      console.error(err);
-      // حل فوري ذكي: لو اعترض الـ SDK لعدم وجود توقيع، نرفعها كـ Base64 لفك القيود
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function() {
-          const base64data = reader.result;
-          
-          const formData = new FormData();
-          formData.append("file", base64data);
-          formData.append("fileName", file.name);
-          formData.append("publicKey", "public_XOn0gN7V7N8Wmsj6Diz8m7f2y9Y=");
+  // تحويل الصورة المحددة من الاستوديو إلى نص مشفر Base64 لتقبلها المنصة مباشرة من المتصفح
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = function() {
+    const base64Data = reader.result;
 
-          fetch("https://upload.imagekit.io/api/v1/files/upload", {
-              method: "POST",
-              body: formData
-          })
-          .then(res => res.json())
-          .then(data => {
-              if (data && data.url) {
-                  document.getElementById('prodImage').value = data.url;
-                  statusEl.innerText = "✅ تم الرفع وتوليد الرابط الفخم لـ ImageKit!";
-                  statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
-              } else {
-                  throw new Error();
-              }
-          })
-          .catch(() => {
-              // لو فشل تماماً نظهر الرابط المباشر البديل لحسابك المفتوح مباشرة لمنع التعطيل
-              const generatedLink = `https://ik.imagekit.io/oqp2hntdo/products_${Date.now()}_${file.name}`;
-              document.getElementById('prodImage').value = generatedLink;
-              statusEl.innerText = "⚠️ تم تهيئة وحفظ مسار الرابط السحابي الخاص بكِ لـ ImageKit!";
-              statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
-          });
+    const formData = new FormData();
+    formData.append("file", base64Data);
+    formData.append("fileName", `diamond_${Date.now()}_${file.name}`);
+    formData.append("publicKey", PUBLIC_KEY);
+
+    // استخدام الـ API المباشر مع التوثيق المفتوح لتفادي أخطاء الـ 400 نهائياً
+    fetch("https://upload.imagekit.io/api/v1/files/upload", {
+      method: "POST",
+      headers: {
+        // تمرير الـ PublicKey في هيدر الطلب لمنح صلاحية الرفع لملف الـ HTML المحلي
+        "Authorization": "Basic " + btoa(PUBLIC_KEY + ":")
+      },
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => { throw new Error(err.message || "حدث خطأ بالتوثيق") });
       }
-    } else {
-      // الرفع الطبيعي الناجح في حال استجاب الحساب
-      document.getElementById('prodImage').value = result.url;
-      statusEl.innerText = "✅ تم رفع الصورة وحفظها بنجاح فائق!";
-      statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
-    }
-  });
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.url) {
+        // وضع الرابط المولد بنجاح داخل صندوق الإدخال
+        document.getElementById('prodImage').value = data.url;
+        statusEl.innerText = "✅ تم رفع الصورة بنجاح وتوليد رابط سحابي حقيقي لـ ImageKit!";
+        statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      statusEl.innerText = "❌ فشل الرفع لـ ImageKit. تأكدي من تفعيل Unsigned Upload بالحساب.";
+      statusEl.className = "block text-[11px] text-rose-500 font-bold mt-2 mr-1";
+    });
+  };
 });
 
 // نشر كرت منتج جديد للفايربيس
