@@ -179,7 +179,7 @@
         <div>
           <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج السحابية</label>
           <div class="space-y-3">
-            <!-- حقل إدخال Uploadcare ممرر إليه كود اللغة العربية تلقائياً وبدون دالة مسببة للأخطاء -->
+            <!-- حقل إدخال Uploadcare ممرر إليه كود اللغة العربية تلقائياً -->
             <div class="w-full" dir="ltr">
               <input type="hidden" role="uploadcare-uploader" id="uploadcareInput" data-public-key="42cd45b709faa0cf86b6" data-images-only="true" data-locale="ar">
             </div>
@@ -304,16 +304,20 @@ const database = firebase.database();
 const singleWidget = uploadcare.SingleWidget('[role=uploadcare-uploader]');
 const statusEl = document.getElementById('uploadStatus');
 
-singleWidget.onUploadComplete(function(info) {
-  document.getElementById('prodImage').value = info.cdnUrl;
-  statusEl.innerText = "✅ تم رفع الصورة وتوليد الرابط الملكي عبر Uploadcare بنجاح!";
-  statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
-});
-
-singleWidget.onStateChange(function(state) {
-  if (state === 'uploading') {
+// تتبع حالة الرفع بدقة عبر دالة onChange المدمجة بالـ Widget
+singleWidget.onChange(function(file) {
+  if (file) {
     statusEl.innerText = "⏳ جاري الرفع السريع واستضافة الملف على Uploadcare CDN...";
     statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
+    
+    file.done(function(info) {
+      document.getElementById('prodImage').value = info.cdnUrl;
+      statusEl.innerText = "✅ تم رفع الصورة وتوليد الرابط الملكي عبر Uploadcare بنجاح!";
+      statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
+    }).fail(function() {
+      statusEl.innerText = "❌ حدث خطأ أثناء معالجة الملف، يرجى المحاولة مجدداً.";
+      statusEl.className = "block text-[11px] text-rose-500 font-bold mt-2 mr-1";
+    });
   }
 });
 
