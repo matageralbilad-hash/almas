@@ -9,7 +9,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<!-- مكتبة الفايربيس بنظام Compat المتوافق -->
+<!-- مكتبات الفايربيس بنظام Compat المتوافق -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -115,7 +115,6 @@
 
 <div id="particles"></div>
 
-<!-- شريط الإدارة العلوي البارز -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
   <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -150,7 +149,6 @@
           <input type="text" id="prodName" required class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="مثال: فستان سهرة مخمل فاخر">
         </div>
 
-        <!-- نظام الرفع المتطور والسلس المباشر لـ Supabase Storage -->
         <div>
           <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج</label>
           <div class="grid grid-cols-3 gap-3">
@@ -261,7 +259,6 @@ window.switchAdminTab = function(tabId) {
   document.getElementById(`tab-${tabId}`).className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
 };
 
-// إعدادات اتصال الفايربيس الأساسية الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
   authDomain: "wc-fantasy-9a504.firebaseapp.com",
@@ -276,26 +273,25 @@ const firebaseConfig = {
 try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
 const database = firebase.database();
 
-
-// ⚡ الإعدادات السحابية المباشرة لـ Supabase Storage الخاصة بمشروعك ⚡
+// ⚡ إعدادات الـ API الصحيحة والمحدثة لـ Supabase المرفقة بطلبك ⚡
 const SUPABASE_URL = "https://wzxtpajepfvyogsnqqfy.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_drM6Tg0GHJ2_5r3tmR_zew_U1neEeRf"; 
-const BUCKET_NAME = "diamond-images"; // تأكد أنك أنشأت الحاوية بهذا الاسم وجعلتها Public!
+const BUCKET_NAME = "diamond-images"; 
 
 document.getElementById('supabaseFileInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
 
   const statusEl = document.getElementById('uploadStatus');
-  statusEl.innerText = "⏳ جاري رفع واستضافة الصورة على Supabase...";
+  statusEl.innerText = "⏳ جاري الرفع الآمن إلى Supabase Storage...";
   statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
 
-  // توليد اسم فخم وفريد للملف لتفادي التكرار والتعارض
+  // تنظيف اسم الملف وجعله فريداً بالكامل تفادياً للـ CORS والتعارض
   const cleanFileName = `dress_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
   const uploadUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${cleanFileName}`;
   const apiUploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${cleanFileName}`;
 
-  // إرسال الصورة مباشرة عبر بروتوكول Fetch الصافي المعتمد من سوبابيس
+  // هيكلة الـ Request بالمعايير الصارمة لـ Supabase للرفع المباشر بدون كود خلفي
   fetch(apiUploadUrl, {
     method: "POST",
     headers: {
@@ -307,25 +303,22 @@ document.getElementById('supabaseFileInput').addEventListener('change', function
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error("فشل الرفع السحابي، تأكدي من إعدادات حاوية سوبابيس");
+      throw new Error("فشل الرفع، تأكدي من تسمية الـ Bucket وجعلها Public");
     }
     return response.json();
   })
   .then(data => {
-    // وضع الرابط العام المولد بنجاح تام داخل صندوق حقل الصورة لرفعه للفايربيس
     document.getElementById('prodImage').value = uploadUrl;
-    statusEl.innerText = "✅ تم رفع الصورة بنجاح وتوليد رابط سوبابيس ملكي!";
+    statusEl.innerText = "✅ تم رفع الفستان وتوليد الرابط الملكي بنجاح!";
     statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
   })
   .catch(err => {
     console.error(err);
-    statusEl.innerText = "❌ فشل الرفع لـ Supabase، يرجى المحاولة مجدداً.";
+    statusEl.innerText = "❌ فشل الرفع لـ Supabase. تأكدي من الاتصال بالإنترنت وجربي مجدداً.";
     statusEl.className = "block text-[11px] text-rose-500 font-bold mt-2 mr-1";
   });
 });
 
-
-// نشر كرت منتج جديد للفايربيس
 document.getElementById('addProductForm').addEventListener('submit', (e) => {
   e.preventDefault();
   
@@ -352,7 +345,6 @@ document.getElementById('addProductForm').addEventListener('submit', (e) => {
   .catch(err => alert('خطأ بالفايربيس: ' + err.message));
 });
 
-// جلب الإحصائيات حياً ومباشرة
 function listenToStats() {
   const productsRef = database.ref('products');
   productsRef.on('value', (snapshot) => {
