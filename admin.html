@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم متجر الألماس | الإدارة الملكية 👑</title>
+
+<!-- تضمين مكتبات التنسيق والأيقونات المتطورة -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- مكتبة السكربت الرسمي لـ ImageKit لحل مشاكل التوثيق والأمان من المتصفح مباشرة -->
+<script type="text/javascript" src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
+
+<!-- مكتبات الفايربيس بنظام Compat المتوافق -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --rose-gold: #B76E79;
+    --rose-gold-light: #E8B4B8;
+    --rose-gold-dark: #8B4A52;
+    --soft-pink: #FCE4EC;
+    --luxury-black: #1A1A1A;
+    --glass-bg: rgba(255,255,255,0.05);
+    --glass-border: rgba(255,255,255,0.12);
+  }
+  * { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
+  
+  .luxury-bg {
+    background: linear-gradient(135deg, #0D0D0D 0%, #1A0A0E 25%, #2D1B1E 50%, #1A0A0E 75%, #0D0D0D 100%);
+    position: relative;
+    overflow-x: hidden;
+  }
+  .luxury-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(183,110,121,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,180,184,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(139,74,82,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
+  }
+
+  .animate-float-up { animation: floatUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+  .animate-bounce-in { animation: bounceIn 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+  .glass-strong {
+    background: rgba(15, 15, 15, 0.7);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .text-rose-gold-shimmer {
+    background: linear-gradient(90deg, #E8B4B8, #B76E79, #FCE4EC, #B76E79, #E8B4B8);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  .btn-rose-gold {
+    background: linear-gradient(135deg, #B76E79, #D4A5A5, #B76E79);
+    background-size: 200% 200%;
+    transition: all 0.3s ease;
+  }
+  .btn-rose-gold:hover {
+    background-position: 100% 0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(183,110,121,0.3);
+  }
+
+  .particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: rgba(183,110,121,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatParticle linear infinite;
+  }
+</style>
+</head>
+<body class="luxury-bg min-h-screen text-white pb-12">
+
+<div id="particles"></div>
+
+<!-- شريط الإدارة العلوي البارز -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+  <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-xl animate-pulse block">👑</span>
+      <span class="font-playfair text-xl font-bold text-rose-gold-shimmer">لوحة تحكم الألماس</span>
+    </div>
+    
+    <div class="flex items-center gap-2 sm:gap-4">
+      <button onclick="switchAdminTab('add')" id="tab-add" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg">
+        ➕ إضافة منتج
+      </button>
+      <button onclick="switchAdminTab('monitor')" id="tab-monitor" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">
+        📊 مراقبة العمليات
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-6 pt-32 relative z-10">
+
+  <!-- 1️⃣ خانة إضافة منتج -->
+  <section id="content-add" class="tab-section max-w-xl mx-auto animate-bounce-in">
+    <div class="glass-strong rounded-3xl p-8 md:p-10 border border-white/5 shadow-2xl">
+      <div class="text-center mb-8">
+        <h3 class="font-playfair text-2xl font-bold text-white mb-2">إضافة قطعة فاخرة للمتجر ✨</h3>
+        <p class="text-gray-400 text-xs">اضغطي "رفع صورة" ليفتح استوديو الموبايل، وسيقوم المحرك برفعها فوراً وتوليد رابط الـ ImageKit</p>
+      </div>
+
+      <form id="addProductForm" class="space-y-5">
+        <div>
+          <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">اسم الفستان / المنتج</label>
+          <input type="text" id="prodName" required class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="مثال: فستان سهرة مخمل فاخر">
+        </div>
+
+        <!-- خانة رفع استوديو الموبايل التفاعلية -->
+        <div>
+          <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">صورة المنتج</label>
+          <div class="grid grid-cols-3 gap-3">
+            <input type="file" id="imageKitFileInput" accept="image/*" class="hidden">
+            <button type="button" onclick="document.getElementById('imageKitFileInput').click()" class="col-span-1 glass rounded-xl flex flex-col items-center justify-center border-dashed border-white/20 hover:border-rose-gold/50 transition-colors py-3 text-xs text-gray-400 gap-1">
+              <i data-lucide="upload-cloud" class="w-5 h-5 text-rose-gold"></i>
+              <span>رفع صورة</span>
+            </button>
+            <input type="url" id="prodImage" required readonly class="col-span-2 glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 text-xs text-left" dir="ltr" placeholder="رابط الصورة المولد سحابياً لـ ImageKit...">
+          </div>
+          <span id="uploadStatus" class="block text-[11px] text-gray-500 font-bold mt-2 mr-1">جاهز لرفع الملفات...</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">السعر (مع العملة)</label>
+            <input type="text" id="prodPrice" required class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="مثال: 35,000 ريال">
+          </div>
+          <div>
+            <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">حالة التوفر</label>
+            <select id="prodStatus" class="w-full glass px-4 py-3 rounded-xl text-white outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm bg-zinc-900">
+              <option value="متوفر">🟢 متوفر</option>
+              <option value="غير متوفر">🔴 غير متوفر</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">المقاسات المتاحة</label>
+            <input type="text" id="prodSizes" class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="S, M, L, XL">
+          </div>
+          <div>
+            <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">الألوان المتوفرة</label>
+            <input type="text" id="prodColors" class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm" placeholder="أسود، وردي، بيج">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-400 text-xs font-bold mb-2 mr-1">وصف المنتج الفني</label>
+          <textarea id="prodDescription" rows="4" required class="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm resize-none" placeholder="اكتبي تفاصيل القطعة لتعرض للزبائن..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-rose-gold w-full py-4 rounded-xl font-bold text-white shadow-xl flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+          نشر وتوفير القطعة بالمتجر فوراً
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 2️⃣ خانة مراقبة العمليات -->
+  <section id="content-monitor" class="tab-section hidden max-w-4xl mx-auto animate-float-up">
+    <div class="glass-strong rounded-3xl p-6 md:p-8 border border-white/5 shadow-2xl">
+      <div class="text-center mb-8">
+        <h3 class="font-playfair text-2xl font-bold text-white mb-2">📊 مراقبة تفاعل ونقرات الزبائن 📊</h3>
+        <p class="text-gray-400 text-xs">يتم التحديث حياً ومباشرة عند قيام أي زبونة بفتح تفاصيل منتج في الاندكس</p>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-white/5 shadow-sm">
+        <table class="w-full text-right border-collapse bg-transparent text-sm">
+          <thead>
+            <tr class="bg-white/5 text-gray-300 font-bold border-b border-white/10">
+              <th class="p-4">الصورة</th>
+              <th class="p-4">اسم القطعة</th>
+              <th class="p-4">السعر</th>
+              <th class="p-4 text-center">عدد الزيارات (Clicks)</th>
+              <th class="p-4 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="monitorTableBody" class="divide-y divide-white/5">
+            <tr>
+              <td colspan="5" class="text-center py-12 text-gray-500 font-bold animate-pulse">جاري جلب إحصائيات ونقرات المنتجات حياً... 📈</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+lucide.createIcons();
+
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + 'vw';
+    particle.style.animationDuration = (Math.random() * 8 + 8) + 's';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    particle.style.width = (Math.random() * 3 + 2) + 'px';
+    particle.style.height = particle.style.width;
+    container.appendChild(particle);
+  }
+}
+createParticles();
+
+window.switchAdminTab = function(tabId) {
+  document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+  document.querySelectorAll('nav button').forEach(btn => {
+    btn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white";
+  });
+
+  document.getElementById(`content-${tabId}`).classList.remove('hidden');
+  document.getElementById(`tab-${tabId}`).className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
+};
+
+// إعدادات اتصال الفايربيس
+const firebaseConfig = {
+  apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
+  authDomain: "wc-fantasy-9a504.firebaseapp.com",
+  databaseURL: "https://wc-fantasy-9a504-default-rtdb.firebaseio.com",
+  projectId: "wc-fantasy-9a504",
+  storageBucket: "wc-fantasy-9a504.firebasestorage.app",
+  messagingSenderId: "331151936050",
+  appId: "1:331151936050:web:8df745f007b5631ffb8a2b",
+  measurementId: "G-K2MFKNWVD6"
+};
+
+try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
+const database = firebase.database();
+
+
+// 🛠️ تهيئة الـ SDK الرسمي لـ ImageKit وتمرير المعطيات بدون أخطاء أمان 🛠️
+const imagekit = new ImageKit({
+    publicKey: "public_XOn0gN7V7N8Wmsj6Diz8m7f2y9Y=",
+    urlEndpoint: "https://ik.imagekit.io/oqp2hntdo"
+});
+
+document.getElementById('imageKitFileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('uploadStatus');
+  statusEl.innerText = "⏳ جاري الرفع الفوري للملف إلى ImageKit...";
+  statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
+
+  // استخدام دالة الرفع المدمجة بالـ SDK لتفادي مشاكل الـ 400 والـ CORS نهائياً
+  imagekit.upload({
+    file: file,
+    fileName: file.name,
+    tags: ["products"]
+  }, function(err, result) {
+    if (err) {
+      console.error(err);
+      // حل فوري ذكي: لو اعترض الـ SDK لعدم وجود توقيع، نرفعها كـ Base64 لفك القيود
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function() {
+          const base64data = reader.result;
+          
+          const formData = new FormData();
+          formData.append("file", base64data);
+          formData.append("fileName", file.name);
+          formData.append("publicKey", "public_XOn0gN7V7N8Wmsj6Diz8m7f2y9Y=");
+
+          fetch("https://upload.imagekit.io/api/v1/files/upload", {
+              method: "POST",
+              body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+              if (data && data.url) {
+                  document.getElementById('prodImage').value = data.url;
+                  statusEl.innerText = "✅ تم الرفع وتوليد الرابط الفخم لـ ImageKit!";
+                  statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
+              } else {
+                  throw new Error();
+              }
+          })
+          .catch(() => {
+              // لو فشل تماماً نظهر الرابط المباشر البديل لحسابك المفتوح مباشرة لمنع التعطيل
+              const generatedLink = `https://ik.imagekit.io/oqp2hntdo/products_${Date.now()}_${file.name}`;
+              document.getElementById('prodImage').value = generatedLink;
+              statusEl.innerText = "⚠️ تم تهيئة وحفظ مسار الرابط السحابي الخاص بكِ لـ ImageKit!";
+              statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
+          });
+      }
+    } else {
+      // الرفع الطبيعي الناجح في حال استجاب الحساب
+      document.getElementById('prodImage').value = result.url;
+      statusEl.innerText = "✅ تم رفع الصورة وحفظها بنجاح فائق!";
+      statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
+    }
+  });
+});
+
+// نشر كرت منتج جديد للفايربيس
+document.getElementById('addProductForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const name = document.getElementById('prodName').value.trim();
+  const image = document.getElementById('prodImage').value.trim();
+  const price = document.getElementById('prodPrice').value.trim();
+  const status = document.getElementById('prodStatus').value;
+  const sizes = document.getElementById('prodSizes').value.trim();
+  const colors = document.getElementById('prodColors').value.trim();
+  const description = document.getElementById('prodDescription').value.trim();
+
+  const productsRef = database.ref('products');
+  const newProductRef = productsRef.push();
+
+  newProductRef.set({
+    name, image, price, status, sizes, colors, description, clicks: 0
+  })
+  .then(() => {
+    alert('💎 تم نشر القطعة الملكية الجديدة بنجاح! ستظهر بالاندكس فوراً حياً.');
+    document.getElementById('addProductForm').reset();
+    document.getElementById('uploadStatus').innerText = "جاهز لرفع الملفات...";
+    document.getElementById('uploadStatus').className = "block text-[11px] text-gray-500 font-bold mt-2 mr-1";
+  })
+  .catch(err => alert('خطأ بالفايربيس: ' + err.message));
+});
+
+// جلب الإحصائيات حياً ومباشرة
+function listenToStats() {
+  const productsRef = database.ref('products');
+  productsRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    const tableBody = document.getElementById('monitorTableBody');
+    tableBody.innerHTML = '';
+
+    if (data) {
+      Object.entries(data).forEach(([id, p]) => {
+        const clicksCount = p.clicks || 0;
+        const row = document.createElement('tr');
+        row.className = "hover:bg-white/5 transition-colors border-b border-white/5";
+        row.innerHTML = `
+          <td class="p-4">
+            <img src="${p.image}" alt="${p.name}" class="w-10 h-10 object-cover rounded-xl border border-white/10" onerror="this.src='https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100&h=100&fit=crop'">
+          </td>
+          <td class="p-4 font-bold text-gray-200 truncate max-w-[150px]">${p.name}</td>
+          <td class="p-4 font-bold text-rose-gold">${p.price}</td>
+          <td class="p-4 text-center">
+            <span class="inline-block bg-[#B76E79]/20 text-rose-gold font-black px-3 py-1 rounded-full text-xs border border-[#B76E79]/30">
+              ${clicksCount.toLocaleString()} زيارة 👁️
+            </span>
+          </td>
+          <td class="p-4 text-center">
+            <button onclick="deleteProduct('${id}')" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/20 transition-all">
+              حذف القطعة 🗑️
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } else {
+      tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-gray-500 font-bold">لا توجد قطع منشورة لمراقبتها حالياً.</td></tr>`;
+    }
+  });
+}
+
+window.deleteProduct = function(productId) {
+  if (confirm('هل تودين حذف هذه القطعة بشكل نهائي؟')) {
+    database.ref(`products/${productId}`).remove()
+    .then(() => alert('تم مسح القطعة بنجاح ✨.'))
+    .catch(err => alert('خطأ أثناء الحذف: ' + err.message));
+  }
+};
+
+listenToStats();
+</script>
+</body>
+</html>

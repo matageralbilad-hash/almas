@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر الألماس | فخامة شي إن الفاخرة ✨</title>
+
+<!-- تضمين مكتبات التنسيق والأيقونات المتطورة -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- مكتبات الفايربيس بنظام Compat المتوافق مع الكود -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --rose-gold: #B76E79;
+    --rose-gold-light: #E8B4B8;
+    --rose-gold-dark: #8B4A52;
+    --soft-pink: #FCE4EC;
+    --luxury-black: #1A1A1A;
+    --glass-bg: rgba(255,255,255,0.05);
+    --glass-border: rgba(255,255,255,0.12);
+  }
+  * { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
+  .font-playfair { font-family: 'Playfair Display', serif; }
+
+  /* الخلفية السينمائية الداكنة المتموجة الفخمة جداً للنساء */
+  .luxury-bg {
+    background: linear-gradient(135deg, #0D0D0D 0%, #1A0A0E 25%, #2D1B1E 50%, #1A0A0E 75%, #0D0D0D 100%);
+    position: relative;
+    overflow-x: hidden;
+  }
+  .luxury-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(183,110,121,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,180,184,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(139,74,82,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .luxury-bg::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B76E79' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* حركات الأنميشن والتأثيرات الخرافية */
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(50px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.6); }
+    50% { transform: scale(1.04); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(183,110,121,0.2); }
+    50% { box-shadow: 0 0 40px rgba(183,110,121,0.5); }
+  }
+  @keyframes cardPop {
+    0% { opacity: 0; transform: translateY(40px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes modalCinematic {
+    0% { opacity: 0; transform: scale(0.85) translateY(30px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes diamondRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
+  }
+
+  .animate-float-up { animation: floatUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+  .animate-bounce-in { animation: bounceIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+  .animate-card-pop { animation: cardPop 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+  .animate-modal { animation: modalCinematic 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+  /* القوالب الزجاجية الملكية Glassmorphism */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+  .glass-strong {
+    background: rgba(15, 15, 15, 0.7);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .text-rose-gold-shimmer {
+    background: linear-gradient(90deg, #E8B4B8, #B76E79, #FCE4EC, #B76E79, #E8B4B8);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0D0D0D; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #B76E79, #E8B4B8); border-radius: 4px; }
+
+  .product-card {
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(183,110,121,0.2);
+  }
+
+  .btn-rose-gold {
+    background: linear-gradient(135deg, #B76E79, #D4A5A5, #B76E79);
+    background-size: 200% 200%;
+    transition: all 0.3s ease;
+  }
+  .btn-rose-gold:hover {
+    background-position: 100% 0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(183,110,121,0.3);
+  }
+
+  .diamond-icon { animation: diamondRotate 25s linear infinite; }
+  .particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: rgba(183,110,121,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatParticle linear infinite;
+  }
+</style>
+</head>
+<body class="luxury-bg min-h-screen text-white pb-12">
+
+<!-- حاوية جزيئات الألماس الطائرة في الخلفية -->
+<div id="particles"></div>
+
+<!-- شريط التنقل العلوي البارز بنظام الخانات المباشرة العلوية -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <!-- شعار الألماس الدوار الفخم -->
+    <div class="flex items-center gap-3">
+      <svg class="w-9 h-9 text-rose-gold diamond-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2L2 12l10 10 10-10L12 2z"/>
+        <path d="M12 2L7 12l5 10 5-10-5-10z" opacity="0.4"/>
+        <path d="M2 12h20M7 12l5-10M17 12l-5-10"/>
+      </svg>
+      <span class="font-playfair text-2xl font-bold text-rose-gold-shimmer tracking-wide">متجر الألماس</span>
+    </div>
+    
+    <!-- الخانات العلوية المباشرة للتنقل الفوري ومحاذاة الأقسام علوياً -->
+    <div class="flex items-center gap-2 sm:gap-6">
+      <button onclick="switchTab('about')" id="tab-about" class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg">
+        من نحن
+      </button>
+      <button onclick="switchTab('products')" id="tab-products" class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">
+        منتجاتنا
+      </button>
+      <button onclick="switchTab('contact')" id="tab-contact" class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">
+        تواصل معنا
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- المحتوى الديناميكي للخانات (يتبدل بدون النزول لأسفل) -->
+<main class="max-w-7xl mx-auto px-6 pt-32 relative z-10">
+
+  <!-- 1️⃣ خانة (من نحن): واجهة هبوط سينمائية فخمة ومرتبة بمؤثرات قوية -->
+  <section id="content-about" class="tab-section min-h-[70vh] flex flex-col items-center justify-center text-center animate-bounce-in">
+    <div class="inline-flex items-center gap-2 glass px-6 py-2 rounded-full mb-6">
+      <i data-lucide="sparkles" class="w-4 h-4 text-rose-gold animate-pulse"></i>
+      <span class="text-rose-gold text-sm font-semibold tracking-wider">فخامة شي إن بين يديكِ</span>
+    </div>
+
+    <h1 class="font-playfair text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
+      <span class="text-white">متجر</span>
+      <span class="text-rose-gold-shimmer"> الألماس</span>
+    </h1>
+
+    <p class="text-xl md:text-2xl text-gray-300 mb-6 font-light">
+      وجهتكِ الأولى والملكية للأناقة والملابس النسائية الفاخرة
+    </p>
+
+    <div class="max-w-3xl mx-auto mb-10 bg-white/5 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10 shadow-xl">
+      <p class="text-gray-300 leading-loose text-lg">
+        نحن مناديب معتمدون ومباشرون لموقع <span class="text-rose-gold font-semibold underline decoration-wavy">شي إن SHEIN</span> العالمي، نختصر عليكِ عناء البحث والطلب لنقدم لكِ تشكيلة حصرية من أرقى الملابس، الموديلات، والفساتين النسائية الفاخرة بأسعار قوية جداً لا مثيل لها بأسواقنا. نختار كل قطعة بعناية ملكية فائقة لنضمن لكِ تميزاً يليق بجمالكِ الساحر.
+      </p>
+    </div>
+
+    <!-- بطاقات الأرقام والمميزات مرتبة تفاعلياً -->
+    <div class="flex flex-wrap justify-center gap-6 mb-10">
+      <div class="glass px-8 py-4 rounded-2xl min-w-[140px]">
+        <div class="text-3xl font-bold text-rose-gold">100%</div>
+        <div class="text-gray-400 text-xs mt-1">جودة أصلية فاخرة</div>
+      </div>
+      <div class="glass px-8 py-4 rounded-2xl min-w-[140px]">
+        <div class="text-3xl font-bold text-rose-gold">🛡️</div>
+        <div class="text-gray-400 text-xs mt-1">أسعار تنافسية قوية</div>
+      </div>
+    </div>
+
+    <button onclick="switchTab('products')" class="btn-rose-gold px-8 py-4 rounded-full text-lg font-bold text-white flex items-center gap-2 shadow-xl">
+      <i data-lucide="gem" class="w-5 h-5"></i>
+      استكشفي الكوليكشن الفخم
+    </button>
+  </section>
+
+
+  <!-- 2️⃣ خانة (منتجاتنا): تظهر مدمجة بأنظمة الفايربيس والبحث والأنميشن المقارب للكود المرفق -->
+  <section id="content-products" class="tab-section hidden animate-float-up">
+    <div class="text-center mb-12">
+      <h2 class="font-playfair text-4xl font-bold text-white mb-3">منتجاتنا المعروضة حياً ✨</h2>
+      <p class="text-gray-400 max-w-xl mx-auto text-sm">كوليكشن أنيق يسحب بياناته مباشرة من لوحة التحكم ومربوط بفايربيس</p>
+    </div>
+
+    <!-- صندوق البحث المتقدم الذكي بتصميم زجاجي مطبق -->
+    <div class="max-w-xl mx-auto mb-12">
+      <div class="relative">
+        <i data-lucide="search" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+        <input type="text" id="searchInput"
+          placeholder="ابحثي بالاسم، الوصف، اللون، أو المقاس الفاخر..."
+          class="w-full glass px-12 py-4 rounded-2xl text-white placeholder-gray-500 outline-none border border-white/10 focus:border-rose-gold/50 transition-all duration-300 text-lg">
+      </div>
+    </div>
+
+    <!-- حاوية شبكة المنتجات الحية الديناميكية -->
+    <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="col-span-full flex justify-center py-20">
+        <div class="text-center">
+          <div class="w-12 h-12 border-4 border-rose-gold/20 border-t-rose-gold rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-gray-400 text-sm">جاري مزامنة القطع الفاخرة من الفايربيس...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 3️⃣ خانة (التواصل معنا): فورم ملكي منظم جداً للواتساب اليمني برقمك المكتوب -->
+  <section id="content-contact" class="tab-section hidden max-w-xl mx-auto animate-float-up">
+    <div class="glass-strong rounded-3xl p-8 md:p-10 border border-white/5 shadow-2xl">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 glass px-4 py-1 rounded-full mb-3">
+          <i data-lucide="heart" class="w-4 h-4 text-rose-gold animate-pulse"></i>
+          <span class="text-rose-gold text-sm font-semibold">نحن هنا من أجلكِ دائماً</span>
+        </div>
+        <h2 class="font-playfair text-3xl font-bold text-white mb-2">التواصل المباشر</h2>
+        <p class="text-gray-400 text-sm">أدخلي بياناتكِ وسيقوم النظام بتوجيهك للواتساب فوراً</p>
+      </div>
+
+      <form id="contactForm" class="space-y-5">
+        <div>
+          <label class="block text-gray-300 text-xs font-bold mb-2 mr-1">الاسم الكريم</label>
+          <div class="relative">
+            <i data-lucide="user" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+            <input type="text" id="contactName" required
+              class="w-full glass px-11 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm"
+              placeholder="أدخلي اسمكِ الكريم">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-xs font-bold mb-2 mr-1">رقم الهاتف</label>
+          <div class="relative">
+            <i data-lucide="phone" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+            <input type="tel" id="contactPhone" required
+              class="w-full glass px-11 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm text-left" dir="ltr"
+              placeholder="774257557">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-xs font-bold mb-2 mr-1">تفاصيل رسالتكِ أو استفساركِ</label>
+          <div class="relative">
+            <i data-lucide="message-square" class="absolute right-4 top-3 w-4 h-4 text-gray-500"></i>
+            <textarea id="contactMessage" rows="4" required
+              class="w-full glass px-11 py-3 rounded-xl text-white placeholder-gray-600 outline-none border border-white/10 focus:border-rose-gold/50 transition-all text-sm resize-none"
+              placeholder="اكتبي ما تودين الاستفسار عنه هنا..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-rose-gold w-full py-3.5 rounded-xl text-md font-bold text-white flex items-center justify-center gap-2 shadow-lg">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          إرسال الرسالة عبر الواتساب
+        </button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- النافذة السينمائية المنبثقة للتفاصيل الكاملة عند النقر (Product Modal Popup) -->
+<div id="productModal" class="fixed inset-0 z-[100] hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div id="modalContent" class="animate-modal glass-strong rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative border border-white/10 shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-4 left-4 w-9 h-9 glass rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ذيل الصفحة الفخم البسيط -->
+<footer class="relative z-10 py-8 px-6 border-t border-white/5 mt-20">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <span class="text-rose-gold font-bold text-sm">💎 متجر الألماس الفاخر</span>
+    </div>
+    <p class="text-gray-600 text-xs">جميع الحقوق محفوظة لمتجر الألماس © 2026</p>
+  </div>
+</footer>
+
+<script>
+// تهيئة الأيقونات
+lucide.createIcons();
+
+// محرك توليد ذرات الألماس الطائرة في الخلفية المظلمة
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 25; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + 'vw';
+    particle.style.animationDuration = (Math.random() * 8 + 8) + 's';
+    particle.style.animationDelay = Math.random() * 6 + 's';
+    particle.style.width = (Math.random() * 3 + 2) + 'px';
+    particle.style.height = particle.style.width;
+    container.appendChild(particle);
+  }
+}
+createParticles();
+
+// 🔘 محرك التبديل الاحترافي والكامل بين الخانات العلوية للتنقل (Tabs Switching Engine)
+window.switchTab = function(tabId) {
+  // إخفاء جميع الأقسام والتابات
+  document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+  
+  // إزالة ستايل التنشيط الملكي من كافة الأزرار العلوية
+  document.querySelectorAll('nav button').forEach(btn => {
+    btn.className = "px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white";
+  });
+
+  // إظهار التاب المستهدفة وتنشيط الزر الخاص بها فوراً بالتصميم الفخم
+  document.getElementById(`content-${tabId}`).classList.remove('hidden');
+  document.getElementById(`tab-${tabId}`).className = "px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
+};
+
+// إعدادات وبيانات الاتصال بقاعدة بيانات الفايربيس الخاص بك
+const firebaseConfig = {
+  apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
+  authDomain: "wc-fantasy-9a504.firebaseapp.com",
+  databaseURL: "https://wc-fantasy-9a504-default-rtdb.firebaseio.com",
+  projectId: "wc-fantasy-9a504",
+  storageBucket: "wc-fantasy-9a504.firebasestorage.app",
+  messagingSenderId: "331151936050",
+  appId: "1:331151936050:web:8df745f007b5631ffb8a2b",
+  measurementId: "G-K2MFKNWVD6"
+};
+
+// تهيئة الفايربيس بنظام Compat المعتمد في الأكواد الخاصة بك
+try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
+const database = firebase.database();
+
+let allProducts = [];
+const WHATSAPP_NUMBER = "96774257557"; // الرقم اليمني المخصص للاستلام
+
+// الاتصال وجلب المنتجات حياً من قاعدة البيانات المباشرة
+function fetchProducts() {
+  const productsRef = database.ref('products');
+  productsRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      allProducts = Object.entries(data).map(([id, product]) => ({ id, ...product }));
+      renderProducts(allProducts);
+    } else {
+      allProducts = [];
+      document.getElementById('productsGrid').innerHTML = `<div class='col-span-full text-center py-12 text-gray-500 font-bold'>لا توجد منتجات مضافة حالياً بلوحة التحكم.</div>`;
+    }
+  });
+}
+
+// بناء رندرة كروت الفساتين والملابس النسائية بحركات قفز قوية ومستوحاة من التصميم السينمائي
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map((product, index) => {
+    const isAvailable = product.status === 'متوفر' || product.status === 'available';
+    // إظهار أول 10 كلمات فقط من الوصف وإلحاقها بـ ... كما تم التحديد
+    const words = product.description ? product.description.split(' ') : [];
+    const shortDesc = words.slice(0, 10).join(' ') + (words.length > 10 ? '...' : '');
+    
+    return `
+      <div class="product-card animate-card-pop glass rounded-2xl overflow-hidden cursor-pointer group" style="animation-delay: ${index * 0.05}s" onclick="openModal('${product.id}')">
+        <div class="relative overflow-hidden">
+          <img src="${product.image}" alt="${product.name}" class="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop'">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          <div class="absolute top-3 right-3">
+            <span class="px-3 py-1 rounded-full text-xs font-bold ${isAvailable ? 'bg-emerald-500/80 text-white' : 'bg-rose-600/80 text-white'}">${isAvailable ? '✓ متوفر' : '✗ غير متوفر'}</span>
+          </div>
+          <div class="absolute inset-0 bg-[#B76E79]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div class="w-11 h-11 glass rounded-full flex items-center justify-center"><i data-lucide="eye" class="w-4 h-4 text-white"></i></div>
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-rose-gold transition-colors truncate">${product.name}</h3>
+          <p class="text-gray-400 text-xs mb-4 line-clamp-2 leading-relaxed">${shortDesc}</p>
+          <div class="flex items-center justify-between pt-2 border-t border-white/5">
+            <span class="text-2xl font-black text-rose-gold-shimmer tracking-tight">${product.price}</span>
+            <button class="w-9 h-9 glass rounded-xl flex items-center justify-center hover:bg-[#B76E79]/20 transition-colors"><i data-lucide="arrow-left" class="w-4 h-4 text-rose-gold"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+// فتح المودال السينمائي المذهل لعرض تفاصيل الكوليكشن وزيادة العداد للمراقبة
+function openModal(productId) {
+  const product = allProducts.find(p => p.id === productId);
+  if (!product) return;
+  const isAvailable = product.status === 'متوفر' || product.status === 'available';
+  
+  document.getElementById('modalBody').innerHTML = `
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="relative rounded-2xl overflow-hidden bg-zinc-900">
+        <img src="${product.image}" alt="${product.name}" class="w-full h-80 md:h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop'">
+        <div class="absolute top-3 right-3"><span class="px-3 py-1 rounded-full text-xs font-bold ${isAvailable ? 'bg-emerald-500/90 text-white' : 'bg-rose-600/90 text-white'}">${isAvailable ? '✓ متوفر' : '✗ غير متوفر'}</span></div>
+      </div>
+      <div class="flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-bold text-[#B76E79] tracking-wider block mb-2">💎 فخامة القطعة الملكية</span>
+          <h2 class="font-playfair text-2xl md:text-3xl font-bold text-white mb-3">${product.name}</h2>
+          <div class="text-3xl font-black text-rose-gold mb-4">${product.price}</div>
+          <hr class="border-white/5 mb-4" />
+          <h4 class="text-xs font-bold text-gray-400 mb-2">الوصف الكامل والمواصفات:</h4>
+          <p class="text-gray-300 text-sm leading-relaxed mb-5 whitespace-pre-line">${product.description || 'لا يوجد وصف فني متوفر لهذه القطعة.'}</p>
+          
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="glass p-3 rounded-xl border border-white/5">
+              <span class="block text-[10px] text-gray-500 font-bold mb-1">📏 المقاسات المتوفرة</span>
+              <span class="font-bold text-sm text-gray-200">${product.sizes || 'S, M, L, XL'}</span>
+            </div>
+            <div class="glass p-3 rounded-xl border border-white/5">
+              <span class="block text-[10px] text-gray-500 font-bold mb-1">🎨 الألوان المتاحة</span>
+              <span class="font-bold text-sm text-gray-200">${product.colors || 'كما في الصورة'}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`مرحباً متجر الألماس 💎\nأود طلب شراء المنتج التالي المعروض بالموقع الالكتروني:\n\n📦 *اسم المنتج:* ${product.name}\n💰 *السعر المعلن:* ${product.price}\n📏 *المقاس:* ${product.sizes || 'حسب الرغبة'}\n🎨 *اللون:* ${product.colors || 'حسب الرغبة'}\n\nيرجى تأكيد الطلب والمتابعة معي لطفا ✨`)}" 
+             target="_blank" 
+             class="btn-rose-gold w-full py-3.5 rounded-xl text-md font-bold text-white flex items-center justify-center gap-2 shadow-lg ${!isAvailable ? 'opacity-40 pointer-events-none' : ''}">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>${isAvailable ? 'شراء وتأكيد عبر الواتساب' : 'المنتج غير متوفر حالياً'}
+          </a>
+        </div>
+      </div>
+    </div>`;
+    
+  document.getElementById('productModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  lucide.createIcons();
+
+  // تتبع ومراقبة العمليات: زيادة عداد النقرات للمنتج في الفايربيس تلقائياً
+  if (product.id) {
+    const clicksRef = database.ref(`products/${product.id}/clicks`);
+    clicksRef.transaction(current => (current || 0) + 1);
+  }
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+// محرك نظام البحث الذكي والشامل من خلال المدخلات
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    const query = e.target.value.toLowerCase().trim();
+    if (!query) { renderProducts(allProducts); return; }
+    const filtered = allProducts.filter(p => 
+      (p.name && p.name.toLowerCase().includes(query)) ||
+      (p.description && p.description.toLowerCase().includes(query)) ||
+      (p.colors && p.colors.toLowerCase().includes(query)) ||
+      (p.sizes && p.sizes.toLowerCase().includes(query))
+    );
+    renderProducts(filtered);
+  }, 250);
+});
+
+// معالجة وإرسال فورم اتصل بنا الموجه مباشرة للواتساب
+document.getElementById('contactForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('contactName').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+  
+  const whatsappMessage = `📩 *رسالة تواصل جديدة لمتجر الألماس* 📩\n\n👤 *الاسم:* ${name}\n📱 *رقم الهاتف للعميل:* ${phone}\n\n💬 *الرسالة المكتوبة:*\n${message}`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+});
+
+// استقبال مفتاح الهروب لإغلاق المودال المنبثق
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+// استدعاء جلب وتجهيز البيانات فور التشغيل
+fetchProducts();
+</script>
+</body>
+</html>
