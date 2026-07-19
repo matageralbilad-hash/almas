@@ -9,6 +9,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<!-- تضمين السكربت الرسمي لـ Supabase لحل مشاكل الشبكة والاتصال المباشر -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 <!-- مكتبات الفايربيس بنظام Compat المتوافق -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -273,50 +276,48 @@ const firebaseConfig = {
 try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
 const database = firebase.database();
 
-// ⚡ إعدادات الـ API الصحيحة والمحدثة لـ Supabase المرفقة بطلبك ⚡
+// ⚡ تهيئة اتصال مكتبة Supabase SDK الرسمية ⚡
 const SUPABASE_URL = "https://wzxtpajepfvyogsnqqfy.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_drM6Tg0GHJ2_5r3tmR_zew_U1neEeRf"; 
 const BUCKET_NAME = "diamond-images"; 
 
-document.getElementById('supabaseFileInput').addEventListener('change', function(e) {
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById('supabaseFileInput').addEventListener('change', async function(e) {
   const file = e.target.files[0];
   if (!file) return;
 
   const statusEl = document.getElementById('uploadStatus');
-  statusEl.innerText = "⏳ جاري الرفع الآمن إلى Supabase Storage...";
+  statusEl.innerText = "⏳ جاري الرفع السحابي عبر Supabase SDK...";
   statusEl.className = "block text-[11px] text-amber-400 font-bold mt-2 mr-1";
 
-  // تنظيف اسم الملف وجعله فريداً بالكامل تفادياً للـ CORS والتعارض
   const cleanFileName = `dress_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-  const uploadUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${cleanFileName}`;
-  const apiUploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${cleanFileName}`;
 
-  // هيكلة الـ Request بالمعايير الصارمة لـ Supabase للرفع المباشر بدون كود خلفي
-  fetch(apiUploadUrl, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-      "apikey": SUPABASE_ANON_KEY,
-      "Content-Type": file.type
-    },
-    body: file
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("فشل الرفع، تأكدي من تسمية الـ Bucket وجعلها Public");
-    }
-    return response.json();
-  })
-  .then(data => {
-    document.getElementById('prodImage').value = uploadUrl;
+  try {
+    // الرفع الرسمي المباشر والمحمي من انقطاع حزم الـ DNS
+    const { data, error } = await supabaseClient.storage
+      .from(BUCKET_NAME)
+      .upload(cleanFileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    // جلب الرابط العام للملف المرفوع بنجاح
+    const { data: publicUrlData } = supabaseClient.storage
+      .from(BUCKET_NAME)
+      .getPublicUrl(cleanFileName);
+
+    document.getElementById('prodImage').value = publicUrlData.publicUrl;
     statusEl.innerText = "✅ تم رفع الفستان وتوليد الرابط الملكي بنجاح!";
     statusEl.className = "block text-[11px] text-emerald-400 font-bold mt-2 mr-1";
-  })
-  .catch(err => {
+
+  } catch (err) {
     console.error(err);
-    statusEl.innerText = "❌ فشل الرفع لـ Supabase. تأكدي من الاتصال بالإنترنت وجربي مجدداً.";
+    statusEl.innerText = "❌ فشل الرفع لـ Supabase. يرجى التأكد من تشغيل الإنترنت لديكِ وإعادة المحاولة.";
     statusEl.className = "block text-[11px] text-rose-500 font-bold mt-2 mr-1";
-  });
+  }
 });
 
 document.getElementById('addProductForm').addEventListener('submit', (e) => {
