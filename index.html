@@ -64,10 +64,6 @@
     50% { transform: scale(1.04); }
     100% { opacity: 1; transform: scale(1); }
   }
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(183,110,121,0.2); }
-    50% { box-shadow: 0 0 40px rgba(183,110,121,0.5); }
-  }
   @keyframes cardPop {
     0% { opacity: 0; transform: translateY(40px) scale(0.9); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -97,7 +93,6 @@
   .animate-card-pop { animation: cardPop 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
   .animate-modal { animation: modalCinematic 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-  /* القوالب الزجاجية الملكية Glassmorphism */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -153,17 +148,18 @@
     pointer-events: none;
     animation: floatParticle linear infinite;
   }
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+  }
 </style>
 </head>
 <body class="luxury-bg min-h-screen text-white pb-12">
 
-<!-- حاوية جزيئات الألماس الطائرة في الخلفية -->
 <div id="particles"></div>
 
-<!-- شريط التنقل العلوي البارز بنظام الخانات المباشرة العلوية -->
 <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
   <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <!-- شعار الألماس الدوار الفخم -->
     <div class="flex items-center gap-3">
       <svg class="w-9 h-9 text-rose-gold diamond-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 2L2 12l10 10 10-10L12 2z"/>
@@ -173,7 +169,6 @@
       <span class="font-playfair text-2xl font-bold text-rose-gold-shimmer tracking-wide">متجر الألماس</span>
     </div>
     
-    <!-- الخانات العلوية المباشرة للتنقل الفوري ومحاذاة الأقسام علوياً -->
     <div class="flex items-center gap-2 sm:gap-6">
       <button onclick="switchTab('about')" id="tab-about" class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg">
         من نحن
@@ -188,10 +183,9 @@
   </div>
 </nav>
 
-<!-- المحتوى الديناميكي للخانات (يتبدل بدون النزول لأسفل) -->
 <main class="max-w-7xl mx-auto px-6 pt-32 relative z-10">
 
-  <!-- 1️⃣ خانة (من نحن): واجهة هبوط سينمائية فخمة ومرتبة بمؤثرات قوية -->
+  <!-- 1️⃣ خانة من نحن -->
   <section id="content-about" class="tab-section min-h-[70vh] flex flex-col items-center justify-center text-center animate-bounce-in">
     <div class="inline-flex items-center gap-2 glass px-6 py-2 rounded-full mb-6">
       <i data-lucide="sparkles" class="w-4 h-4 text-rose-gold animate-pulse"></i>
@@ -213,7 +207,6 @@
       </p>
     </div>
 
-    <!-- بطاقات الأرقام والمميزات مرتبة تفاعلياً -->
     <div class="flex flex-wrap justify-center gap-6 mb-10">
       <div class="glass px-8 py-4 rounded-2xl min-w-[140px]">
         <div class="text-3xl font-bold text-rose-gold">100%</div>
@@ -231,15 +224,13 @@
     </button>
   </section>
 
-
-  <!-- 2️⃣ خانة (منتجاتنا): تظهر مدمجة بأنظمة الفايربيس والبحث والأنميشن المقارب للكود المرفق -->
+  <!-- 2️⃣ خانة منتجاتنا -->
   <section id="content-products" class="tab-section hidden animate-float-up">
     <div class="text-center mb-12">
       <h2 class="font-playfair text-4xl font-bold text-white mb-3">منتجاتنا المعروضة حياً ✨</h2>
       <p class="text-gray-400 max-w-xl mx-auto text-sm">كوليكشن أنيق يسحب بياناته مباشرة من لوحة التحكم ومربوط بفايربيس</p>
     </div>
 
-    <!-- صندوق البحث المتقدم الذكي بتصميم زجاجي مطبق -->
     <div class="max-w-xl mx-auto mb-12">
       <div class="relative">
         <i data-lucide="search" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
@@ -249,7 +240,6 @@
       </div>
     </div>
 
-    <!-- حاوية شبكة المنتجات الحية الديناميكية -->
     <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div class="col-span-full flex justify-center py-20">
         <div class="text-center">
@@ -260,8 +250,7 @@
     </div>
   </section>
 
-
-  <!-- 3️⃣ خانة (التواصل معنا): فورم ملكي منظم جداً للواتساب اليمني برقمك المكتوب -->
+  <!-- 3️⃣ خانة التواصل معنا -->
   <section id="content-contact" class="tab-section hidden max-w-xl mx-auto animate-float-up">
     <div class="glass-strong rounded-3xl p-8 md:p-10 border border-white/5 shadow-2xl">
       <div class="text-center mb-8">
@@ -327,7 +316,6 @@
   </div>
 </div>
 
-<!-- ذيل الصفحة الفخم البسيط -->
 <footer class="relative z-10 py-8 px-6 border-t border-white/5 mt-20">
   <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-2">
@@ -338,10 +326,8 @@
 </footer>
 
 <script>
-// تهيئة الأيقونات
 lucide.createIcons();
 
-// محرك توليد ذرات الألماس الطائرة في الخلفية المظلمة
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 25; i++) {
@@ -357,22 +343,15 @@ function createParticles() {
 }
 createParticles();
 
-// 🔘 محرك التبديل الاحترافي والكامل بين الخانات العلوية للتنقل (Tabs Switching Engine)
 window.switchTab = function(tabId) {
-  // إخفاء جميع الأقسام والتابات
   document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
-  
-  // إزالة ستايل التنشيط الملكي من كافة الأزرار العلوية
   document.querySelectorAll('nav button').forEach(btn => {
     btn.className = "px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white";
   });
-
-  // إظهار التاب المستهدفة وتنشيط الزر الخاص بها فوراً بالتصميم الفخم
   document.getElementById(`content-${tabId}`).classList.remove('hidden');
   document.getElementById(`tab-${tabId}`).className = "px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 btn-rose-gold text-white shadow-lg";
 };
 
-// إعدادات وبيانات الاتصال بقاعدة بيانات الفايربيس الخاص بك
 const firebaseConfig = {
   apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
   authDomain: "wc-fantasy-9a504.firebaseapp.com",
@@ -384,14 +363,12 @@ const firebaseConfig = {
   measurementId: "G-K2MFKNWVD6"
 };
 
-// تهيئة الفايربيس بنظام Compat المعتمد في الأكواد الخاصة بك
 try { firebase.initializeApp(firebaseConfig); } catch(e) { console.error(e); }
 const database = firebase.database();
 
 let allProducts = [];
-const WHATSAPP_NUMBER = "96774257557"; // الرقم اليمني المخصص للاستلام
+const WHATSAPP_NUMBER = "96774257557"; 
 
-// الاتصال وجلب المنتجات حياً من قاعدة البيانات المباشرة
 function fetchProducts() {
   const productsRef = database.ref('products');
   productsRef.on('value', (snapshot) => {
@@ -400,18 +377,15 @@ function fetchProducts() {
       allProducts = Object.entries(data).map(([id, product]) => ({ id, ...product }));
       renderProducts(allProducts);
     } else {
-      allProducts = [];
-      document.getElementById('productsGrid').innerHTML = `<div class='col-span-full text-center py-12 text-gray-500 font-bold'>لا توجد منتجات مضافة حالياً بلوحة التحكم.</div>`;
+      document.getElementById('productsGrid').innerHTML = `<div class='col-span-full text-center py-12 text-gray-500 font-bold'>لا توجد منتجات مضافة حالياً.</div>`;
     }
   });
 }
 
-// بناء رندرة كروت الفساتين والملابس النسائية بحركات قفز قوية ومستوحاة من التصميم السينمائي
 function renderProducts(products) {
   const grid = document.getElementById('productsGrid');
   grid.innerHTML = products.map((product, index) => {
     const isAvailable = product.status === 'متوفر' || product.status === 'available';
-    // إظهار أول 10 كلمات فقط من الوصف وإلحاقها بـ ... كما تم التحديد
     const words = product.description ? product.description.split(' ') : [];
     const shortDesc = words.slice(0, 10).join(' ') + (words.length > 10 ? '...' : '');
     
@@ -440,7 +414,6 @@ function renderProducts(products) {
   lucide.createIcons();
 }
 
-// فتح المودال السينمائي المذهل لعرض تفاصيل الكوليكشن وزيادة العداد للمراقبة
 function openModal(productId) {
   const product = allProducts.find(p => p.id === productId);
   if (!product) return;
@@ -459,7 +432,7 @@ function openModal(productId) {
           <div class="text-3xl font-black text-rose-gold mb-4">${product.price}</div>
           <hr class="border-white/5 mb-4" />
           <h4 class="text-xs font-bold text-gray-400 mb-2">الوصف الكامل والمواصفات:</h4>
-          <p class="text-gray-300 text-sm leading-relaxed mb-5 whitespace-pre-line">${product.description || 'لا يوجد وصف فني متوفر لهذه القطعة.'}</p>
+          <p class="text-gray-300 text-sm leading-relaxed mb-5 whitespace-pre-line">${product.description || 'لا يوجد وصف فني متوفر هذه القطعة.'}</p>
           
           <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="glass p-3 rounded-xl border border-white/5">
@@ -472,7 +445,6 @@ function openModal(productId) {
             </div>
           </div>
         </div>
-        
         <div>
           <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`مرحباً متجر الألماس 💎\nأود طلب شراء المنتج التالي المعروض بالموقع الالكتروني:\n\n📦 *اسم المنتج:* ${product.name}\n💰 *السعر المعلن:* ${product.price}\n📏 *المقاس:* ${product.sizes || 'حسب الرغبة'}\n🎨 *اللون:* ${product.colors || 'حسب الرغبة'}\n\nيرجى تأكيد الطلب والمتابعة معي لطفا ✨`)}" 
              target="_blank" 
@@ -487,7 +459,6 @@ function openModal(productId) {
   document.body.style.overflow = 'hidden';
   lucide.createIcons();
 
-  // تتبع ومراقبة العمليات: زيادة عداد النقرات للمنتج في الفايربيس تلقائياً
   if (product.id) {
     const clicksRef = database.ref(`products/${product.id}/clicks`);
     clicksRef.transaction(current => (current || 0) + 1);
@@ -499,7 +470,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-// محرك نظام البحث الذكي والشامل من خلال المدخلات
 let searchTimeout;
 document.getElementById('searchInput').addEventListener('input', (e) => {
   clearTimeout(searchTimeout);
@@ -516,7 +486,6 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   }, 250);
 });
 
-// معالجة وإرسال فورم اتصل بنا الموجه مباشرة للواتساب
 document.getElementById('contactForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const name = document.getElementById('contactName').value.trim();
@@ -527,10 +496,8 @@ document.getElementById('contactForm').addEventListener('submit', (e) => {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
 });
 
-// استقبال مفتاح الهروب لإغلاق المودال المنبثق
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-// استدعاء جلب وتجهيز البيانات فور التشغيل
 fetchProducts();
 </script>
 </body>
